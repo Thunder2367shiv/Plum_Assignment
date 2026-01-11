@@ -14,7 +14,7 @@ This project implements a **Sequential AI Chain**. Instead of a single "black bo
 
 
 ### 🔄 The "Synthesis" Logic
-1. **OCR Layer:** `Tesseract.js` extracts raw text from image uploads.
+1. **OCR Layer:** `Tesseract.js` extracts raw text from image uploads. Else if user directly give text then we skip this step.
 2. **Phase 1 (The Fact Extractor):** - Uses `gpt-4o-mini` to identify tests and create a technical `fields` object.
    - **Result:** Pure data (Values, Units, Status).
 3. **Phase 2 (The Narrative Translator):** - Takes the JSON from Phase 1 and generates a human-readable `summary`.
@@ -103,7 +103,7 @@ git clone [https://github.com/Thunder2367shiv/Plum_Assignment](https://github.co
 
 Install dependencies:
 ```Bash
-npm install
+npm install multer cors dotenv @openrouter/sdk express tesseract.js
 ```
 Configure Environment: Create a .env file and add:
 Code snippet
