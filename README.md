@@ -1,4 +1,4 @@
-# 🩺 Problem Statement 3: AI-Powered Report Simplifier
+# Problem Statement 3: AI-Powered Report Simplifier
 
 A production-ready MERN-stack backend designed to translate complex medical lab results into patient-friendly insights. This project utilizes a **Two-Phase AI Chaining Pipeline** to ensure technical precision while delivering empathetic, easy-to-understand explanations.
 
