@@ -3,8 +3,6 @@
 A production-ready MERN-stack backend designed to translate complex medical lab results into patient-friendly insights. This project utilizes a **Two-Phase AI Chaining Pipeline** to ensure technical precision while delivering empathetic, easy-to-understand explanations.
 
 But it is prefered to test the api locally as tesseract and ocrextraction is a bulky process.
-- **Live Demo:** [https://plum-assignment-bay.vercel.app/]
-
 - **GitHub Repository:** [https://github.com/Thunder2367shiv/Plum_Assignment]
 
 ---
