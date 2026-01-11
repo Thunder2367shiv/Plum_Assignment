@@ -1,28 +1,35 @@
-import { runGuardrails } from '../middlewares/guardrails.js';
+import { runGuardrails } from '../utils/guardrails.js';
 import { AIProvider } from '../services/aiProvider.js';
+import { performOCR } from '../utils/ocrService.js';
 import fs from 'fs';
 
 export const handleReport = async (req, res) => {
   try {
-    let base64 = null;
-    const text = req.body.text;
+    let combinedText = req.body.text || "";
 
+    // 1. Handle File Upload & OCR
     if (req.file) {
-      base64 = fs.readFileSync(req.file.path).toString("base64");
+      const base64 = fs.readFileSync(req.file.path).toString("base64");
+      
+      // Use the new OCR Utility
+      const ocrResult = await performOCR(base64);
+      combinedText += `\n${ocrResult.text}`;
+      
+      // Clean up temp file
       fs.unlinkSync(req.file.path);
     }
 
-    if (!base64 && !text) {
+    if (!combinedText.trim()) {
       return res.status(400).json({ status: "error", message: "No input provided" });
     }
 
-    // Phase 1
-    const phase1Data = await AIProvider.extractRawData(base64, text);
+    // 2. Phase 1: Extraction
+    const phase1Data = await AIProvider.extractRawData(combinedText);
 
-    // Phase 2
+    // 3. Phase 2: Simplification
     const phase2Data = await AIProvider.simplifyData(phase1Data);
 
-    // Guardrails
+    // 4. Guardrails (Safety Check)
     const guard = runGuardrails(phase1Data, phase2Data);
     if (!guard.valid) {
       return res.status(422).json({
@@ -31,14 +38,15 @@ export const handleReport = async (req, res) => {
       });
     }
 
-    // FINAL OUTPUT
+    // 5. Final Synthesis & Success Response
     res.json({
-      tests: phase1Data.tests,
-      summary: phase2Data.summary,
+      tests: phase1Data.tests,      // From Phase 1
+      summary: phase2Data.summary,  // From Phase 2
       status: "ok",
     });
 
   } catch (err) {
+    console.error("Controller Error:", err);
     res.status(500).json({ status: "error", message: err.message });
   }
 };
