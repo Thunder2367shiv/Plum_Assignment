@@ -98,7 +98,7 @@ Example JSON Response:
 
 ### Live API Testing (Postman)
 > Proof of the system processing a medical report via the deployed Render URL.
-![Uploading myfile.png…]()
+<img width="1782" height="948" alt="myfile" src="https://github.com/user-attachments/assets/e68be25d-d195-4294-9bb1-1421a5caf22a" />
 
 ---
 ## 📂 Project Structure 
