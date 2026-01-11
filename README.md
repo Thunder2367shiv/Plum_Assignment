@@ -2,8 +2,8 @@
 
 A production-ready MERN-stack backend designed to translate complex medical lab results into patient-friendly insights. This project utilizes a **Two-Phase AI Chaining Pipeline** to ensure technical precision while delivering empathetic, easy-to-understand explanations.
 
-**Live Demo:** [View Deployed Project]([https://plum-assignment-orcin.vercel.app/])  
-**GitHub Repository:** [View Source Code]([https://github.com/Thunder2367shiv/Plum_Assignment])
+**Live Demo:** [https://plum-assignment-bay.vercel.app/]
+**GitHub Repository:** [https://github.com/Thunder2367shiv/Plum_Assignment]
 
 ---
 
@@ -44,15 +44,11 @@ Processes medical reports via image upload or raw text.
 Example cURL Request:
 ```Bash
 
-curl -X POST [https://plum-assignment-orcin.vercel.app/api/simplify]
+curl -X POST [http://localhost:5000/api/simplify]
 ```
 
 Example Postman Request(POST):
 ```Bash
-With deployed link:
-https://plum-assignment-orcin.vercel.app/api/simplify
-
-With local instance:
 https://localhost:5000/api/simplify
 ```
 And Input(text):
