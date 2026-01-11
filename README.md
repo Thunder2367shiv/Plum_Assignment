@@ -95,6 +95,11 @@ Example JSON Response:
     "status": "ok"
 }
 ```
+
+### Live API Testing (Postman)
+> Proof of the system processing a medical report via the deployed Render URL.
+![Uploading myfile.png…]()
+
 ---
 ## 📂 Project Structure 
 
