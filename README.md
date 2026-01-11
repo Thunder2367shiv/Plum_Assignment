@@ -3,6 +3,7 @@
 A production-ready MERN-stack backend designed to translate complex medical lab results into patient-friendly insights. This project utilizes a **Two-Phase AI Chaining Pipeline** to ensure technical precision while delivering empathetic, easy-to-understand explanations.
 
 But it is prefered to test the api locally as tesseract and ocrextraction is a bulky process.
+- **GitHub Repository:** [https://plum-assignment-i1s2.onrender.com/]
 - **GitHub Repository:** [https://github.com/Thunder2367shiv/Plum_Assignment]
 
 ---
@@ -49,6 +50,10 @@ curl -X POST [http://localhost:5000/api/simplify]
 
 Example Postman Request(POST):
 ```Bash
+using deployed link: 
+https://plum-assignment-i1s2.onrender.com/api/simplify
+
+When running backend in vs code:
 https://localhost:5000/api/simplify
 ```
 And Input(text):
@@ -96,7 +101,6 @@ Example JSON Response:
 ```Bash
 Backend/
 ├── index.js            # Entry point & Vercel serverless export
-├── vercel.json         # Vercel deployment & routing config
 ├── package.json        # Dependencies & scripts
 ├── .env                 
 └── src/
@@ -112,8 +116,8 @@ Backend/
   - AI Model: **gpt-4o-mini** via **OpenRouter** (Optimized for medical parsing speed).
 - OCR Engine: **Tesseract.js** (Image-to-text processing).
 - Runtime: **Node.js** / **Express.js**.
-- File Handling: **Multer** (Configured for /tmp storage for **Vercel** compatibility).
-- Deployment: **Vercel** (Serverless Environment).
+- File Handling: **Multer** (Configured for /tmp storage for **Render** compatibility).
+- Deployment: **Render** (Serverless Environment).
 
 ---
 
