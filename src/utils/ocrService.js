@@ -1,12 +1,13 @@
 import Tesseract from "tesseract.js";
 
 /**
- * Utility to convert image buffers/base64 to text
+ * Utility to convert image buffers directly to text.
+ * Optimized for Vercel by avoiding Base64 overhead.
  */
-export const performOCR = async (base64Image) => {
+export const performOCR = async (imageBuffer) => {
   try {
-    const buffer = Buffer.from(base64Image, "base64");
-    const { data } = await Tesseract.recognize(buffer, "eng");
+    // recognize() can take a Buffer directly, which is faster than Base64
+    const { data } = await Tesseract.recognize(imageBuffer, "eng");
     
     return {
       text: data.text,
@@ -14,6 +15,7 @@ export const performOCR = async (base64Image) => {
     };
   } catch (err) {
     console.error("OCR Utility Error:", err);
-    return { text: "", confidence: 0 };
+    // Throw error so it hits the controller's catch block
+    throw new Error("OCR processing timed out or failed.");
   }
 };

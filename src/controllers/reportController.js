@@ -1,22 +1,18 @@
 import { runGuardrails } from '../utils/guardrails.js';
 import { AIProvider } from '../services/aiProvider.js';
 import { performOCR } from '../utils/ocrService.js';
-import fs from 'fs';
 
 export const handleReport = async (req, res) => {
   try {
     let combinedText = req.body.text || "";
 
-    // 1. Handle File Upload & OCR
+    // 1. Handle File Upload & OCR (Memory-First Approach)
     if (req.file) {
-      const base64 = fs.readFileSync(req.file.path).toString("base64");
-      
-      // Use the new OCR Utility
-      const ocrResult = await performOCR(base64);
+      // req.file.buffer is the raw image data in RAM
+      const ocrResult = await performOCR(req.file.buffer);
       combinedText += `\n${ocrResult.text}`;
       
-      // Clean up temp file
-      fs.unlinkSync(req.file.path);
+      // No fs.unlinkSync needed because nothing was written to disk!
     }
 
     if (!combinedText.trim()) {
@@ -40,13 +36,15 @@ export const handleReport = async (req, res) => {
 
     // 5. Final Synthesis & Success Response
     res.json({
-      tests: phase1Data.tests,      // From Phase 1
-      summary: phase2Data.summary,  // From Phase 2
+      tests: phase1Data.tests,      // From Phase 1 technical data
+      summary: phase2Data.summary,  // From Phase 2 narrative
       status: "ok",
     });
 
   } catch (err) {
     console.error("Controller Error:", err);
-    res.status(500).json({ status: "error", message: err.message });
+    // On Vercel, use 504 for timeouts if you want to be specific
+    const statusCode = err.message.includes("timeout") ? 504 : 500;
+    res.status(statusCode).json({ status: "error", message: err.message });
   }
 };
