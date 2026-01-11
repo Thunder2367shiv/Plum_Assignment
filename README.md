@@ -9,30 +9,58 @@ A production-ready MERN-stack backend designed to translate complex medical lab 
 
 ## 🏗 System Architecture & Data Flow
 
-This project implements a **Sequential AI Chain**. Instead of a single "black box" prompt, the system separates technical extraction from narrative translation to maintain 100% data integrity.
+This project utilizes a **Modular Layered Architecture** combined with a **Sequential AI Chaining Pipeline**. This ensures that the application is scalable, maintainable, and minimizes AI "hallucinations" by separating data extraction from narrative generation.
+
+### 🗺 High-Level Architecture
 
 
+- **Presentation Layer (Routes):** Entry points for the client requests.
+- **Orchestration Layer (Controllers):** Manages the flow between different AI phases.
+- **Service Layer (OCR & AI):** Independent modules for Tesseract.js and OpenRouter (GPT-4o-mini).
+- **Validation Layer (Guardrails):** Middleware that ensures the input is medical and the output is grounded in facts.
 
-### 🔄 The "Synthesis" Logic
-1. **OCR Layer:** `Tesseract.js` extracts raw text from image uploads. Else if user directly give text then we skip this step.
-2. **Phase 1 (The Fact Extractor):** - Uses `gpt-4o-mini` to identify tests and create a technical `fields` object.
-   - **Result:** Pure data (Values, Units, Status).
-3. **Phase 2 (The Narrative Translator):** - Takes the JSON from Phase 1 and generates a human-readable `summary`.
-   - **Result:** Context and empathy.
-4. **The Merge:** The final controller merges Phase 1's detailed `tests` array with Phase 2's `summary` string to create the final response.
+### 🔄 The "Hybrid-Synthesis" Data Flow
+1. **Input Handling:** Accepts image uploads or raw text. 
+2. **OCR Service:** If an image is provided, `Tesseract.js` extracts raw text. If text is provided directly, this step is bypassed.
+3. **Phase 1 (The Fact Extractor):** Uses `gpt-4o-mini` to parse raw text into a structured, technical `fields` object (Values, Units, Status).
+4. **Phase 2 (The Narrative Translator):** Uses the JSON from Phase 1 to generate a patient-friendly `summary`.
+5. **Synthesis:** The final controller merges the full technical data from Phase 1 with the summary from Phase 2.
 
 ---
 
-## 🧪 API Usage & Example Output
+## 🧪 API Usage & Examples
+```Bash
+POST /api/simplify
+```
 
-### **POST /api/simplify**
 Processes medical reports via image upload or raw text.
 
-**Request Type:** `multipart/form-data`  
-**Keys:** `report` (File) or `text` (String)
+**Request Type**: multipart/form-data
 
-**Standard JSON Response:**
-```json
+**Parameters**:
+- report: (File) JPG/PNG image of a lab report.
+- text: (String) Raw medical text (Alternative to image).
+
+Example cURL Request:
+```Bash
+
+curl -X POST [https://plum-assignment-orcin.vercel.app/api/simplify]
+```
+
+Example Postman Request(POST):
+```Bash
+With deployed link:
+https://plum-assignment-orcin.vercel.app/api/simplify
+
+With local instance:
+https://localhost:5000/api/simplify
+```
+And Input(text):
+```Bash
+"CBC: Hemoglobin 10.2 g/dL (Low), WBC 11,200 /uL (High)"
+```
+Example JSON Response:
+```Bash
 {
     "tests": [
         {
@@ -41,20 +69,28 @@ Processes medical reports via image upload or raw text.
                 "value": 10.2,
                 "unit": "g/dL",
                 "status": "Low",
-                "ref_range": { "low": 13.5, "high": 17.5 }
+                "ref_range": {
+                    "low": 12,
+                    "high": 16
+                }
             }
         },
         {
             "name": "WBC",
             "fields": {
-                "value": 11000,
-                "unit": "cells/mcL",
+                "value": 11200,
+                "unit": "/uL",
                 "status": "High",
-                "ref_range": { "low": 4500, "high": 11000 }
+                "ref_range": {
+                    "low": 4000,
+                    "high": 10000
+                }
             }
         }
     ],
-    "summary": "Your hemoglobin level is low, which might indicate anemia. Additionally, your white blood cell count is elevated, suggesting a possible response to infection.",
+    "summary": "Your test results show that your hemoglobin level is low, and your
+     white blood cell count is high. These results can indicate different health 
+     conditions which may need further investigation.",
     "status": "ok"
 }
 ```
@@ -63,16 +99,16 @@ Processes medical reports via image upload or raw text.
 
 ```Bash
 Backend/
-├── index.js
-├── vercel.json
-├── package.json
-├── .env
+├── index.js            # Entry point & Vercel serverless export
+├── vercel.json         # Vercel deployment & routing config
+├── package.json        # Dependencies & scripts
+├── .env                 
 └── src/
-    ├── app.js
-    ├── controllers/
-    ├── routes/
-    ├── services/
-    └── middlewares/
+    ├── app.js          # Express app & global middleware
+    ├── controllers/    # handleReport: Orchestrates the AI phases
+    ├── routes/         # API endpoint definitions
+    ├── services/       # aiProvider: LLM logic for Phase 1 & 2
+    └── utils/          # ocrService & guardrails (Validation logic)
 ```
 ---
 ## 🛠 Tech Stack
@@ -85,12 +121,11 @@ Backend/
 
 ---
 
-## 🛡 Guardrails & Safety
+## 🛡 Guardrails & Troubleshooting
 
-- **Anti-Hallucination**: Phase 2 is strictly limited to explaining data extracted in Phase 1.
-
-- **Scope Verification**: Custom middleware detects if the input is a medical document. Non-medical inputs trigger a 422 error.
-- **Vercel Optimized**: Uses the /tmp directory for ephemeral file processing, ensuring compatibility with serverless read-only filesystems.
+- **Medical Scope**: The system uses a guardrail middleware to detect non-medical text. If you send "How to make a cake," the API will return a 422 Unprocessed Entity error.
+- **Vercel Timeouts**: OCR is a heavy process. If using the Vercel link, ensure images are clear and under 4MB to avoid the 10-second serverless timeout.
+- **Read-Only FS**: Files are handled in the /tmp directory to comply with Vercel's read-only environment.
 
 ---
 
